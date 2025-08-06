@@ -16,7 +16,7 @@ import Image from "next/image";
 const MAX_FILE_SIZE = 8 * 1024 * 1024;
 const SUPPORTED_FORMATS = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-export const schema = yup.object({
+const schema = yup.object({
   name: yup.string().required("Name is required").min(2).max(50),
   icon_image: yup
     .mixed()
