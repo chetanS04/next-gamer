@@ -40,6 +40,7 @@ const schema = yup.object({
 
 type FormData = yup.InferType<typeof schema>;
 
+
 type GameCommonFieldType = {
   id: number;
   name: string;

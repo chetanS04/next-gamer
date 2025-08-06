@@ -32,6 +32,9 @@ type KycData = {
 const MAX_VIDEO_SIZE_MB = 30;
 const MAX_IMAGE_SIZE_MB = 8;
 
+type FormDatas = yup.InferType<typeof schema>;
+
+
 const schema = yup.object({
   video: yup
     .mixed<FileList>()
@@ -79,6 +82,7 @@ const schema = yup.object({
 });
 
 
+
 export default function KycForm() {
   const {
     register,
@@ -86,7 +90,7 @@ export default function KycForm() {
     watch,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<FormData>({
+  } = useForm<FormDatas>({
     resolver: yupResolver(schema),
   });
 
