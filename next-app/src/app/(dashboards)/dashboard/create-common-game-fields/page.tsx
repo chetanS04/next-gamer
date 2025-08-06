@@ -17,40 +17,36 @@ const MAX_FILE_SIZE = 8 * 1024 * 1024;
 const SUPPORTED_FORMATS = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 
+type FormData = yup.InferType<typeof schema>;
 
 
 const schema = yup.object({
   name: yup.string().required("Name is required").min(2).max(50),
   icon_image: yup
     .mixed<File | string>()
-    .optional() // ✅ Explicitly mark it as optional
+    .required("Icon image is required") // ✅ required
     .test("fileSize", "Icon image must be less than 8MB.", (file) => {
-      if (!file) return true;
       if (typeof file === "string") return true;
       if (file instanceof File) return file.size <= MAX_FILE_SIZE;
-      return true;
+      return false;
     })
     .test("fileType", "Unsupported format", (file) => {
-      if (!file) return true;
       if (typeof file === "string") return true;
       if (file instanceof File) return SUPPORTED_FORMATS.includes(file.type);
-      return true;
+      return false;
     }),
-  type: yup
-    .string()
-    .oneOf(["number", "text"], "Must select either number or text")
-    .required("Please select a type"),
+  type: yup.string().oneOf(["number", "text"]).required("Please select a type"),
 });
 
 
-type FormData = yup.InferType<typeof schema>;
+
 
 
 
 type GameCommonFieldType = {
   id: number;
   name: string;
-  icon_image: string | null;
+  icon_image: string | File |unknown;
   description: string;
   type: "text" | "number";
 };
@@ -78,7 +74,6 @@ const {
   defaultValues: {
     name: "",
     type: "number",
-    icon_image: undefined, // ✅ Fix: match schema optional type
   },
 });
 
