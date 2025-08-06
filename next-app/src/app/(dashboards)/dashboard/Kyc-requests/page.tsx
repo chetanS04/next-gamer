@@ -5,25 +5,43 @@ import { useRouter } from 'next/navigation';
 import axios from '../../../../../utils/axios';
 import { useLoader } from '@/context/LoaderContext';
 
-const statusTabs = [
-  { key: 'pending', label: 'Pending' },
-  { key: 'approved', label: 'Approved' },
-  { key: 'rejected', label: 'Rejected' },
-  { key: 'referred_back', label: 'Referred Back' },
-];
+// const statusTabs = [
+//   { key: 'pending', label: 'Pending' },
+//   { key: 'approved', label: 'Approved' },
+//   { key: 'rejected', label: 'Rejected' },
+//   { key: 'referred_back', label: 'Referred Back' },
+// ];
 
-const tabStyles = {
-  pending: 'border-yellow-500 text-yellow-600',
-  approved: 'border-green-500 text-green-600',
-  rejected: 'border-red-500 text-red-600',
-  referred_back: 'border-blue-500 text-blue-600',
-};
+// const tabStyles = {
+//   pending: 'border-yellow-500 text-yellow-600',
+//   approved: 'border-green-500 text-green-600',
+//   rejected: 'border-red-500 text-red-600',
+//   referred_back: 'border-blue-500 text-blue-600',
+// };
 
 const badgeStyles = {
   pending: 'bg-yellow-100 text-yellow-700',
   approved: 'bg-green-100 text-green-700',
   rejected: 'bg-red-100 text-red-700',
   referred_back: 'bg-blue-100 text-blue-700',
+};
+
+
+
+type StatusKey = 'pending' | 'approved' | 'rejected' | 'referred_back';
+
+const statusTabs: { key: StatusKey; label: string }[] = [
+  { key: 'pending', label: 'Pending' },
+  { key: 'approved', label: 'Approved' },
+  { key: 'rejected', label: 'Rejected' },
+  { key: 'referred_back', label: 'Referred Back' },
+];
+
+const tabStyles: Record<StatusKey, string> = {
+  pending: 'border-yellow-500 text-yellow-600',
+  approved: 'border-green-500 text-green-600',
+  rejected: 'border-red-500 text-red-600',
+  referred_back: 'border-blue-500 text-blue-600',
 };
 
 
