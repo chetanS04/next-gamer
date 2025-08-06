@@ -17,6 +17,9 @@ import Image from 'next/image';
 
 const MAX_FILE_SIZE = 7 * 1024 * 1024;
 
+type FormData = yup.InferType<typeof schema>;
+
+
 const schema = yup.object({
   title: yup.string().required('Title is required').min(2, 'Min 2 characters').max(30),
   description: yup.string().required('Description is required').max(150),
@@ -33,7 +36,6 @@ const schema = yup.object({
   status: yup.boolean().default(true),
 });
 
-type FormData = yup.InferType<typeof schema>;
 
 export interface Slider {
   id: number;

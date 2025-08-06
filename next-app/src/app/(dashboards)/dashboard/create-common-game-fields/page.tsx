@@ -16,10 +16,14 @@ import Image from "next/image";
 const MAX_FILE_SIZE = 8 * 1024 * 1024;
 const SUPPORTED_FORMATS = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
+
+
+
 const schema = yup.object({
   name: yup.string().required("Name is required").min(2).max(50),
   icon_image: yup
-    .mixed()
+    .mixed<File | string>()
+    .optional() // ✅ Explicitly mark it as optional
     .test("fileSize", "Icon image must be less than 8MB.", (file) => {
       if (!file) return true;
       if (typeof file === "string") return true;
@@ -38,7 +42,9 @@ const schema = yup.object({
     .required("Please select a type"),
 });
 
+
 type FormData = yup.InferType<typeof schema>;
+
 
 
 type GameCommonFieldType = {
@@ -61,20 +67,21 @@ function GameCommonField() {
   const { showLoader, hideLoader } = useLoader();
   const baseUrl = "http://localhost:8000/storage/";
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      name: "",
-      type: "number",
-      icon_image: "",
-    },
-  });
+const {
+  register,
+  handleSubmit,
+  setValue,
+  reset,
+  formState: { errors },
+} = useForm<FormData>({
+  resolver: yupResolver(schema),
+  defaultValues: {
+    name: "",
+    type: "number",
+    icon_image: undefined, // ✅ Fix: match schema optional type
+  },
+});
+
 
   const getGames = useCallback(async () => {
     showLoader();
@@ -372,3 +379,5 @@ function GameCommonField() {
 }
 
 export default GameCommonField;
+
+
