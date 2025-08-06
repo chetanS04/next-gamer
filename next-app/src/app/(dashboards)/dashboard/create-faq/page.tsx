@@ -13,7 +13,7 @@ import { useLoader } from "@/context/LoaderContext";
 import { AxiosError } from "axios";
 
 // ✅ Yup Validation Schema
-export const schema = yup.object({
+ const schema = yup.object({
   question: yup.string().required("Question is required").min(5).max(255),
   answer: yup.string().required("Answer is required").min(10),
   status: yup.string().oneOf(["active", "inactive"], "Invalid status").required(),
