@@ -19,6 +19,16 @@ type FormData = {
   terms?: boolean;
 };
 
+
+type KycData = {
+  status: "pending" | "approved" | "rejected" | "referred_back";
+  admin_remark?: string | null;
+  video_path: string;
+  aadhar_path: string;
+  pan_path: string;
+};
+
+
 const MAX_VIDEO_SIZE_MB = 30;
 const MAX_IMAGE_SIZE_MB = 8;
 
@@ -84,7 +94,9 @@ export default function KycForm() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const [kycData, setKycData] = useState<any>(null);
+  // const [kycData, setKycData] = useState<any>(null);
+  const [kycData, setKycData] = useState<KycData | null>(null);
+
 
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [aadharPreview, setAadharPreview] = useState<string | null>(null);
@@ -232,7 +244,7 @@ finally {
           {/* Show status & remark if status is referback/rejected */}
           {kycData &&
             (kycData.status === "rejected" ||
-              kycData.status === "referback") && (
+              kycData.status === "referred_back") && (
               <div className="p-6 mb-6 max-w-md mx-auto text-center bg-white rounded shadow">
                 <p className="text-xl font-semibold text-gray-700 mb-2">
                   KYC Status:{" "}
@@ -497,3 +509,4 @@ finally {
   );
 }
 
+// set this proper in this not use any 
