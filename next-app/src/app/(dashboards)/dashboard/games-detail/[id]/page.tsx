@@ -250,27 +250,34 @@ const {
   // };
 
 
-  const onSubmit = async (values: GameField) => {
+const onSubmit = async (values: any) => {
   if (!gameId) return;
   showLoader();
   try {
     const formData = new FormData();
+
+    // String fields (backstop with "")
     formData.append("label", values.label ?? "");
     formData.append("type", values.type ?? "");
     formData.append("game_id", String(gameId));
     formData.append("order", "0");
+    // Boolean fields as expected by backend ("true"|"false" as string)
     formData.append("is_filterable", values.is_filterable ? "true" : "false");
     formData.append("status", values.status ? "true" : "false");
 
-    // if (values.icon instanceof File) {
-    //   formData.append("icon", values.icon);
-    // }
+    // File input: safest cross-browser type check
+    if (
+      values.icon &&
+      typeof values.icon === "object" &&
+      values.icon !== null &&
+      typeof File !== "undefined" && // ensure we aren't in SSR
+      values.icon instanceof File
+    ) {
+      formData.append("icon", values.icon);
+    }
+    // else, skip. If your backend wants the old string (for editing), send it as needed
 
-    if (values.icon && typeof values.icon === "object" && values.icon instanceof File) {
-  formData.append("icon", values.icon);
-}
-
-
+    // For editing, add _method
     if (editingField) {
       formData.append("_method", "PUT");
       await axios.post(`/api/games-fields/${editingField.id}`, formData, {
@@ -282,6 +289,7 @@ const {
       });
     }
 
+    // ...optional: rest of your UI logic
     setIsModalOpen(false);
     setEditingField(null);
     reset();
