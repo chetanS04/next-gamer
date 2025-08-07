@@ -10,16 +10,20 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 
+
+
+
 type GameField = {
   id: number;
   name?: string;
   label?: string;
-  type?: string;
+  type?: 'text' | 'number'; // <-- restrict to only allow these
   status?: boolean;
   is_filterable?: boolean;
   icon?: string;
   order?: number;
 };
+
 
 const FIELD_TYPES = [
   { value: "text", label: "Text" },
@@ -69,24 +73,45 @@ const Page = () => {
 
 
   // React-hook-form single instance
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      label: "",
-      type: "text",
-      is_filterable: true,
-      status: true,
-      icon: null,
-    },
-  });
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   reset,
+  //   setValue,
+  //   watch,
+  //   formState: { errors },
+  // } = useForm({
+  //   resolver: yupResolver(schema),
+  //   defaultValues: {
+  //     label: "",
+  //     type: "text",
+  //     is_filterable: true,
+  //     status: true,
+  //     icon: null,
+  //   },
+  // });
 
+
+
+
+const {
+  register,
+  handleSubmit,
+  setValue,
+  reset,
+  watch,
+  formState: { errors },
+} = useForm({
+  resolver: yupResolver(schema),
+  defaultValues: {  label: "",
+    type: "text",
+    is_filterable: true,
+    status: true,
+    icon: null,
+
+
+   },
+});
 
   async function getGameFields() {
     showLoader();
@@ -131,78 +156,143 @@ const Page = () => {
   };
 
 
-  const openModal = (field: GameField | null = null) => {
-    setEditingField(field);
-    if (field) {
-      reset({
-        label: field.label || "",
-        type: field.type || "text",
-        is_filterable: field.is_filterable ?? true,
-        status: field.status ?? true,
-        icon: null,
-      });
-      setIconPreview(field.icon ? `http://localhost:8000/storage/${field.icon}` : null);
-    } else {
-      reset({
-        label: "",
-        type: "text",
-        is_filterable: true,
-        status: true,
-        icon: null,
-      });
-      setIconPreview(null);
-    }
-    setIsModalOpen(true);
-  };
-
-  // const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0] ?? null;
-  //   if (file) {
-  //     setIconPreview(URL.createObjectURL(file));
-  //     setValue("icon", file, { shouldValidate: true });
+  // const openModal = (field: GameField | null = null) => {
+  //   setEditingField(field);
+  //   if (field) {
+  //     reset({
+  //       label: field.label || "",
+  //       type: field.type || "text",
+  //       is_filterable: field.is_filterable ?? true,
+  //       status: field.status ?? true,
+  //       icon: null,
+  //     });
+  //     setIconPreview(field.icon ? `http://localhost:8000/storage/${field.icon}` : null);
   //   } else {
+  //     reset({
+  //       label: "",
+  //       type: "text",
+  //       is_filterable: true,
+  //       status: true,
+  //       icon: null,
+  //     });
   //     setIconPreview(null);
-  //     setValue("icon", null);
+  //   }
+  //   setIsModalOpen(true);
+  // };
+
+
+  const openModal = (field: GameField | null = null) => {
+  setEditingField(field);
+
+  if (field) {
+    const allowedTypes: Array<'text' | 'number'> = ['text', 'number'];
+    // fallback to "text" if field.type is not valid
+    const safeType: 'text' | 'number' =
+      allowedTypes.includes(field.type as any) ? (field.type as 'text' | 'number') : 'text';
+
+    reset({
+      label: field.label || "",
+      type: safeType,
+      is_filterable: field.is_filterable ?? true,
+      status: field.status ?? true,
+      icon: null,
+    });
+    setIconPreview(field.icon ? `http://localhost:8000/storage/${field.icon}` : null);
+  } else {
+    reset({
+      label: "",
+      type: "text",
+      is_filterable: true,
+      status: true,
+      icon: null,
+    });
+    setIconPreview(null);
+  }
+  setIsModalOpen(true);
+};
+
+
+  // const onSubmit = async (values: GameField) => {
+  //   if (!gameId) return;
+  //   showLoader();
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("label", values.label ??'');
+  //     formData.append("type", values.type ?? '');
+  //     formData.append("game_id", String(gameId));
+  //     formData.append("order", "0");
+  //     formData.append("is_filterable", values.is_filterable ? "true" : "false");
+  //     formData.append("status", values.status ? "true" : "false");
+
+  //     if (values.icon instanceof File) {
+  //       formData.append("icon", values.icon);
+  //     }
+
+  //     if (editingField) {
+  //       formData.append("_method", "PUT");
+  //       await axios.post(`/api/games-fields/${editingField.id}`, formData, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+  //     } else {
+  //       await axios.post("/api/games-fields", formData, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+  //     }
+
+  //     setIsModalOpen(false);
+  //     setEditingField(null);
+  //     reset();
+  //     setIconPreview(null);
+  //     refreshGameFields();
+  //   } finally {
+  //     hideLoader();
   //   }
   // };
 
-  // Submit handler handles both create and edit modes
+
   const onSubmit = async (values: GameField) => {
-    if (!gameId) return;
-    showLoader();
-    try {
-      const formData = new FormData();
-      formData.append("label", values.label);
-      formData.append("type", values.type);
-      formData.append("game_id", String(gameId));
-      formData.append("order", "0");
-      formData.append("is_filterable", values.is_filterable ? "true" : "false");
-      formData.append("status", values.status ? "true" : "false");
+  if (!gameId) return;
+  showLoader();
+  try {
+    const formData = new FormData();
+    formData.append("label", values.label ?? "");
+    formData.append("type", values.type ?? "");
+    formData.append("game_id", String(gameId));
+    formData.append("order", "0");
+    formData.append("is_filterable", values.is_filterable ? "true" : "false");
+    formData.append("status", values.status ? "true" : "false");
 
-      if (values.icon instanceof File) {
-        formData.append("icon", values.icon);
-      }
+    // if (values.icon instanceof File) {
+    //   formData.append("icon", values.icon);
+    // }
 
-      if (editingField) {
-        formData.append("_method", "PUT");
-        await axios.post(`/api/games-fields/${editingField.id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      } else {
-        await axios.post("/api/games-fields", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
+    if (values.icon && typeof values.icon === "object" && values.icon instanceof File) {
+  formData.append("icon", values.icon);
+}
 
-      setIsModalOpen(false);
-      setEditingField(null);
-      reset();
-      setIconPreview(null);
-      refreshGameFields();
-    } finally {
-      hideLoader();
+
+    if (editingField) {
+      formData.append("_method", "PUT");
+      await axios.post(`/api/games-fields/${editingField.id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    } else {
+      await axios.post("/api/games-fields", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
     }
-  };
+
+    setIsModalOpen(false);
+    setEditingField(null);
+    reset();
+    setIconPreview(null);
+    refreshGameFields();
+  } finally {
+    hideLoader();
+  }
+};
+
+
 
   async function handleChooseSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -212,7 +302,7 @@ const Page = () => {
         .map((field, idx) => ({
           label: field.name,
           type: chooseState[idx]?.type ?? "text",
-          icon: field.icon_image ?? null,
+          icon: field.icon ?? null,
           order: 0,
           is_filterable: true,
           status: true,

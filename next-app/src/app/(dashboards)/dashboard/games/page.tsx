@@ -83,17 +83,16 @@ function AdminPlacementManagement() {
 
 
   const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    watch,
-    formState: { errors }
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
-    defaultValues: { status: true }
-  });
-
+  register,
+  handleSubmit,
+  setValue,
+  reset,
+  watch,
+  formState: { errors },
+} = useForm({
+  resolver: yupResolver(schema),
+  defaultValues: { status: true },
+});
 
   const onDetail = (game: Game) => {
     router.push(`/dashboard/games-detail/${game.id}`);

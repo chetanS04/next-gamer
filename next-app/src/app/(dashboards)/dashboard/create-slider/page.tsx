@@ -17,22 +17,20 @@ import Image from 'next/image';
 
 const MAX_FILE_SIZE = 7 * 1024 * 1024;
 
-type FormData = yup.InferType<typeof schema>;
 
 // type FormData = {
 //   title: string;
 //   description: string;
-  // image?: File | string; // ✅ Now optional
+// image?: File | string; // ✅ Now optional
 //   status: boolean;
 // };
 
 
+// No manual typing: rely on yup.InferType
 const schema = yup.object({
-  title: yup.string().required('Title is required').min(2, 'Min 2 characters').max(30),
-  description: yup.string().required('Description is required').max(150),
-  image: yup
-    .mixed<File | string>()
-    .optional() // ✅ Make it optional
+  title: yup.string().required().min(2).max(30),
+  description: yup.string().required().max(150),
+  image: yup.mixed<File | string>().notRequired()
     .test('fileSize', 'Image size must be less than 8MB.', (value) =>
       !value || typeof value === 'string' ? true : (value as File).size <= MAX_FILE_SIZE
     )
@@ -43,6 +41,7 @@ const schema = yup.object({
     ),
   status: yup.boolean().default(true),
 });
+type FormData = yup.InferType<typeof schema>;
 
 
 
@@ -50,10 +49,11 @@ export interface Slider {
   id: number;
   title: string;
   description: string;
-  image?: File | string; 
+  image?: File | string; // Must be optional and match FormData
   status: boolean;
   created_at: string;
 }
+
 
 export default function SliderManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -66,7 +66,7 @@ export default function SliderManagement() {
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Slider | null>(null);
-  
+
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -75,18 +75,19 @@ export default function SliderManagement() {
 
 
   const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    watch,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      status: true,
-    },
-  });
+  register,
+  handleSubmit,
+  setValue,
+  reset,
+  watch,
+  formState: { errors },
+} = useForm({
+  resolver: yupResolver(schema),
+  defaultValues: { status: true },
+});
+
+
+ 
 
 
   const handleCropSave = async () => {
@@ -106,7 +107,7 @@ export default function SliderManagement() {
       const response = await axios.get('http://localhost:8000/api/slider-list', {
         withCredentials: true,
       });
-      setSliders(response.data.data); // ✅ Access the nested "data" array
+      setSliders(response.data.data); 
     } catch (error) {
       console.error('Failed to fetch sliders:', error);
     }
@@ -254,13 +255,13 @@ export default function SliderManagement() {
                     <td className="px-6 py-4 text-zinc-700 dark:text-zinc-200">{index + 1}</td>
                     <td className="px-2 py-4">
                       {slider?.image ? (
-                      <Image
-  src={`http://localhost:8000/storage/${slider.image}`}
-  alt={slider?.title}
-  width={160} // equivalent to w-40
-  height={56} // equivalent to h-14
-  className="object-cover rounded border border-zinc-300 dark:border-neutral-700"
-/>
+                        <Image
+                          src={`http://localhost:8000/storage/${slider.image}`}
+                          alt={slider?.title}
+                          width={160} // equivalent to w-40
+                          height={56} // equivalent to h-14
+                          className="object-cover rounded border border-zinc-300 dark:border-neutral-700"
+                        />
                       ) : (
                         <span className="text-zinc-400 italic">No Image</span>
                       )}
@@ -371,73 +372,43 @@ export default function SliderManagement() {
           {previewImage && (
             <div>
               <Image
-  src={previewImage}
-  alt="Preview"
-  width={360} // approximate
-  height={140}
-  className="rounded-lg border border-zinc-300 dark:border-zinc-700 object-cover shadow"
-/>
+                src={previewImage}
+                alt="Preview"
+                width={360} // approximate
+                height={140}
+                className="rounded-lg border border-zinc-300 dark:border-zinc-700 object-cover shadow"
+              />
 
             </div>
           )}
 
-          {/* Status Toggle */}
-          {/* <div>
+
+          <div>
             <label htmlFor="status" className="flex items-center gap-3 cursor-pointer">
               <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">Status</span>
               <div
                 className={`
-            flex items-center h-6 w-12 rounded-full
-            border border-zinc-300 dark:border-zinc-700
-            transition-all duration-200
-            ${isChecked ? 'bg-green-600 dark:bg-green-700' : 'bg-zinc-200 dark:bg-zinc-800'}
-          `}
+        flex items-center h-6 w-12 rounded-full
+        border border-zinc-300 dark:border-zinc-700
+        transition-all duration-200
+        ${watch('status') ? 'bg-green-600 dark:bg-green-700' : 'bg-zinc-200 dark:bg-zinc-800'}
+      `}
               >
                 <input
                   type="checkbox"
                   {...register('status')}
                   hidden
                   id="status"
-                  checked={isChecked}
-                  onChange={() => setIsChecked(!isChecked)}
                 />
                 <div
                   className={`
-              h-5 w-5 rounded-full bg-white shadow-md transition-all
-              ${isChecked ? 'translate-x-6' : 'translate-x-0'}
-            `}
-                ></div>
-              </div>
-            </label>
-          </div> */}
-
-          {/* Status Toggle */}
-<div>
-  <label htmlFor="status" className="flex items-center gap-3 cursor-pointer">
-    <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200">Status</span>
-    <div
-      className={`
-        flex items-center h-6 w-12 rounded-full
-        border border-zinc-300 dark:border-zinc-700
-        transition-all duration-200
-        ${watch('status') ? 'bg-green-600 dark:bg-green-700' : 'bg-zinc-200 dark:bg-zinc-800'}
-      `}
-    >
-      <input
-        type="checkbox"
-        {...register('status')}
-        hidden
-        id="status"
-      />
-      <div
-        className={`
           h-5 w-5 rounded-full bg-white shadow-md transition-all
           ${watch('status') ? 'translate-x-6' : 'translate-x-0'}
         `}
-      ></div>
-    </div>
-  </label>
-</div>
+                ></div>
+              </div>
+            </label>
+          </div>
 
 
           {/* Submit Button */}
