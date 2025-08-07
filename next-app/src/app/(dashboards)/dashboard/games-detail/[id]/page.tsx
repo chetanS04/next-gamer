@@ -156,60 +156,60 @@ const {
   };
 
 
-  // const openModal = (field: GameField | null = null) => {
-  //   setEditingField(field);
-  //   if (field) {
-  //     reset({
-  //       label: field.label || "",
-  //       type: field.type || "text",
-  //       is_filterable: field.is_filterable ?? true,
-  //       status: field.status ?? true,
-  //       icon: null,
-  //     });
-  //     setIconPreview(field.icon ? `http://localhost:8000/storage/${field.icon}` : null);
-  //   } else {
-  //     reset({
-  //       label: "",
-  //       type: "text",
-  //       is_filterable: true,
-  //       status: true,
-  //       icon: null,
-  //     });
-  //     setIconPreview(null);
-  //   }
-  //   setIsModalOpen(true);
-  // };
-
-
   const openModal = (field: GameField | null = null) => {
-  setEditingField(field);
+    setEditingField(field);
+    if (field) {
+      reset({
+        label: field.label || "",
+        type: field.type || "text",
+        is_filterable: field.is_filterable ?? true,
+        status: field.status ?? true,
+        icon: null,
+      });
+      setIconPreview(field.icon ? `http://localhost:8000/storage/${field.icon}` : null);
+    } else {
+      reset({
+        label: "",
+        type: "text",
+        is_filterable: true,
+        status: true,
+        icon: null,
+      });
+      setIconPreview(null);
+    }
+    setIsModalOpen(true);
+  };
 
-  if (field) {
-    const allowedTypes: Array<'text' | 'number'> = ['text', 'number'];
-    // fallback to "text" if field.type is not valid
-    const safeType: 'text' | 'number' =
-      allowedTypes.includes(field.type as any) ? (field.type as 'text' | 'number') : 'text';
 
-    reset({
-      label: field.label || "",
-      type: safeType,
-      is_filterable: field.is_filterable ?? true,
-      status: field.status ?? true,
-      icon: null,
-    });
-    setIconPreview(field.icon ? `http://localhost:8000/storage/${field.icon}` : null);
-  } else {
-    reset({
-      label: "",
-      type: "text",
-      is_filterable: true,
-      status: true,
-      icon: null,
-    });
-    setIconPreview(null);
-  }
-  setIsModalOpen(true);
-};
+//   const openModal = (field: GameField | null = null) => {
+//   setEditingField(field);
+
+//   if (field) {
+//     const allowedTypes: Array<'text' | 'number'> = ['text', 'number'];
+//     // fallback to "text" if field.type is not valid
+//     const safeType: 'text' | 'number' =
+//       allowedTypes.includes(field.type as any) ? (field.type as 'text' | 'number') : 'text';
+
+//     reset({
+//       label: field.label || "",
+//       type: safeType,
+//       is_filterable: field.is_filterable ?? true,
+//       status: field.status ?? true,
+//       icon: null,
+//     });
+//     setIconPreview(field.icon ? `http://localhost:8000/storage/${field.icon}` : null);
+//   } else {
+//     reset({
+//       label: "",
+//       type: "text",
+//       is_filterable: true,
+//       status: true,
+//       icon: null,
+//     });
+//     setIconPreview(null);
+//   }
+//   setIsModalOpen(true);
+// };
 
 
   // const onSubmit = async (values: GameField) => {
