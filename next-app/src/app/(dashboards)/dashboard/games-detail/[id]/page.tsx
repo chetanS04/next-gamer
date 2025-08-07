@@ -20,7 +20,7 @@ type GameField = {
   type?: 'text' | 'number'; // <-- restrict to only allow these
   status?: boolean;
   is_filterable?: boolean;
-  icon?: string;
+  icon?: File|string;
   order?: number;
 };
 
@@ -29,6 +29,10 @@ const FIELD_TYPES = [
   { value: "text", label: "Text" },
   { value: "number", label: "Number" },
 ];
+
+
+type FormData = yup.InferType<typeof schema>;
+
 
 const MAX_FILE_SIZE = 8 * 1024 * 1024;
 const SUPPORTED_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -250,7 +254,7 @@ const {
   // };
 
 
-const onSubmit = async (values: any) => {
+const onSubmit = async (values: FormData) => {
   if (!gameId) return;
   showLoader();
   try {
