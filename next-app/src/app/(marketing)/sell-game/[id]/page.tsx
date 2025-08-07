@@ -390,11 +390,11 @@ interface IFormValues {
 
 
 export function buildSchema(fields: GameField[]) {
-  const shape: ZodRawShape = {};
+  const shape: Record<string, ZodTypeAny> = {};
 
   // Dynamic fields
-  fields.forEach((field) => {
-    let validator: ZodType<any>;
+  for (const field of fields) {
+    let validator: ZodType<unknown>;
 
     if (field.type === "number") {
       validator = z.preprocess(
@@ -416,12 +416,11 @@ export function buildSchema(fields: GameField[]) {
       validator = validator.optional();
     }
 
-    // Cast shape so it's writable
-    (shape as any)[field.label] = validator;
-  });
+    shape[field.label] = validator;
+  }
 
-  // Static: price
-  (shape as any).price = z.preprocess(
+  // Static field: price
+  shape["price"] = z.preprocess(
     (v) => (typeof v === "string" && v !== "" ? parseFloat(v) : v),
     z
       .number()
@@ -429,29 +428,28 @@ export function buildSchema(fields: GameField[]) {
       .refine((val) => !isNaN(val), { message: "Price must be a number" })
   );
 
-  // Static: image uploads
-  const fileSchema = z
-    .custom<FileList>(
-      (val) => {
-        if (!(val instanceof FileList)) return false;
-        if (val.length === 0) return false;
-        const file = val[0];
-        if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) return false;
-        if (file.size > 5 * 1024 * 1024) return false;
-        return true;
-      },
-      { message: "Required image (jpeg/jpg/png, max 5MB)" }
-    );
+  // Static fields: image file validation
+  const fileSchema: ZodType<FileList> = z.custom<FileList>(
+    (val): val is FileList => {
+      if (!(val instanceof FileList)) return false;
+      if (val.length === 0) return false;
+      const file = val[0];
+      const isValidType = ["image/jpeg", "image/png", "image/jpg"].includes(file.type);
+      const isValidSize = file.size <= 5 * 1024 * 1024;
+      return isValidType && isValidSize;
+    },
+    {
+      message: "Required image (jpeg/jpg/png, max 5MB)",
+    }
+  );
 
-  const imageKeys = ["primary_image", "secondary_image"]; // Replace with your actual keys
-
+  const imageKeys = ["primary_image", "secondary_image"];
   for (const key of imageKeys) {
-    (shape as any)[key] = fileSchema;
+    shape[key] = fileSchema;
   }
 
   return z.object(shape);
 }
-
 // 3. REACT COMPONENT --------------------------
 const GameForm = () => {
   const { id } = useParams();
@@ -504,7 +502,7 @@ type IFormValuess = z.infer<ReturnType<typeof buildSchema>>;
           axios.get(`/api/games`),
         ]);
         setFields(fieldData.fields || []);
-        const game = (gamesData.games || []).find((g: any) => String(g.id) === String(id));
+        const game = (gamesData.games || []).find((g:IFormValuess ) => String(g.id) === String(id));
         if (game && game.name) setGameName(game.name);
       } catch {
         setFetchError("Failed to fetch form definitions. Please try again.");
@@ -607,7 +605,7 @@ type IFormValuess = z.infer<ReturnType<typeof buildSchema>>;
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
           {/* Dynamic fields (except images & price) */}
           {fields
-            .filter((field) => ![...imageKeys, "price"].includes(field.label as any))
+            .filter((field) => ![...imageKeys, "price"].includes(field.label as string))
             .map((field) => (
               <div key={field.id}>
                 <label className="text-blue-300 font-semibold mb-4 gaming-font select-none flex items-center gap-3">
