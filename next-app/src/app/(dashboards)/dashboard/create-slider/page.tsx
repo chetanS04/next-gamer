@@ -19,12 +19,20 @@ const MAX_FILE_SIZE = 7 * 1024 * 1024;
 
 type FormData = yup.InferType<typeof schema>;
 
+// type FormData = {
+//   title: string;
+//   description: string;
+  // image?: File | string; // ✅ Now optional
+//   status: boolean;
+// };
+
 
 const schema = yup.object({
   title: yup.string().required('Title is required').min(2, 'Min 2 characters').max(30),
   description: yup.string().required('Description is required').max(150),
   image: yup
-    .mixed()
+    .mixed<File | string>()
+    .optional() // ✅ Make it optional
     .test('fileSize', 'Image size must be less than 8MB.', (value) =>
       !value || typeof value === 'string' ? true : (value as File).size <= MAX_FILE_SIZE
     )
@@ -37,11 +45,12 @@ const schema = yup.object({
 });
 
 
+
 export interface Slider {
   id: number;
   title: string;
   description: string;
-  image: string;
+  image?: File | string; 
   status: boolean;
   created_at: string;
 }
