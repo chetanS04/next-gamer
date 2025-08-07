@@ -10,7 +10,10 @@ export default function Navbar() {
   const router = useRouter();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  // const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const dropdownRef = useRef<HTMLLIElement>(null);
+
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

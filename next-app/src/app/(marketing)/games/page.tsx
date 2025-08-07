@@ -39,6 +39,10 @@ export default function GamesPage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+      // const dropdownRef = useRef<HTMLLIElement>(null);
+
+
+
   // Sliders state
   const [sliders, setSliders] = useState<Slider[]>([]);
   useEffect(() => {
