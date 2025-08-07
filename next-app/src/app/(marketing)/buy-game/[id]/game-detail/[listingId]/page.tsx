@@ -157,20 +157,21 @@ const [listing, setListing] = useState<Listing | null>(null);
               )}
             </div>
             {/* Extra Game Images */}
-            {listing.game.images?.length > 0 && (
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {listing.game.images.map((img: string, idx: number) => (
-                  <Image
-                    key={idx}
-                    src={img}
-                    alt={`Game Image ${idx + 1}`}
-                    width={600}
-                    height={400}
-                    className="rounded-lg w-full object-cover shadow hover:scale-105 transition-transform"
-                  />
-                ))}
-              </div>
-            )}
+            {listing.game?.images?.length ? (
+  <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+    {listing.game.images.map((img: string, idx: number) => (
+      <Image
+        key={idx}
+        src={img}
+        alt={`Game Image ${idx + 1}`}
+        width={600}
+        height={400}
+        className="rounded-lg w-full object-cover shadow hover:scale-105 transition-transform"
+      />
+    ))}
+  </div>
+) : null}
+
           </div>
         )}
 
