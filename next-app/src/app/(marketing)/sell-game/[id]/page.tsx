@@ -389,7 +389,7 @@ interface IFormValues {
 
 
 
-export function buildSchema(fields: GameField[]) {
+function buildSchema(fields: GameField[]) {
   const shape: Record<string, ZodTypeAny> = {};
 
   // Dynamic fields
