@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import Modal from '@/components/(sheared)/Modal';
-import Cropper from 'react-easy-crop';
+import Cropper, { Area } from 'react-easy-crop';
 import SuccessMessage from '@/components/(sheared)/SuccessMessage';
 import ErrorMessage from '@/components/(sheared)/ErrorMessage';
 import { Pencil, Trash2 } from 'lucide-react';
@@ -65,7 +65,8 @@ export default function SliderManagement() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Slider | null>(null);
+  // const [croppedAreaPixels, setCroppedAreaPixels] = useState<Slider | null>(null);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -93,6 +94,7 @@ export default function SliderManagement() {
   const handleCropSave = async () => {
     if (!cropImageUrl || !croppedAreaPixels) return;
     const croppedBlob = await getCroppedImg(cropImageUrl, croppedAreaPixels);
+
     const croppedFile = new File([croppedBlob], selectedImageFile?.name || 'cropped.jpg', {
       type: 'image/jpeg',
     });
