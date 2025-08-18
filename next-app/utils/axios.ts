@@ -1,7 +1,7 @@
 import axiosLib from "axios";
 
 const axios = axiosLib.create({
-  baseURL: "https://api.idbazaar.topntech.com",
+  baseURL: "https://www.api.idbazaar.topntech.com",
   withCredentials: false, 
   headers: {
     "Accept": "application/json",
