@@ -1,15 +1,27 @@
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+//   reactStrictMode: true,
+//   images: {
+//     remotePatterns: [
+//       {
+//         protocol: "https",
+//         hostname: "www.api.idbazaar.topntech.com",
+//         port: "",
+//         pathname: "/storage/**",
+//       },
+//     ],
+//   },
+// };
+
+// export default nextConfig;
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['localhost'], // Add your allowed domains here
+    domains: ['localhost'],
   },
 
 };
 
-
-module.exports = {
-  output: 'standalone',
-}
 
 export default nextConfig;

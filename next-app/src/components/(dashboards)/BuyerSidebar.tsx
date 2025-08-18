@@ -8,33 +8,31 @@ import { useAuth } from '@/context/AuthContext'
 
 const navLinks = [
   { href: '/', label: 'Home', icon: Home },
-
+  { href: '/buyer-dashboard/games-purchased', label: 'Games Purchased', icon: Home },
 ]
 
+interface SidebarProps {
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
+}
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, logout } = useAuth()
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const [isOpen, setIsOpen] = useState(true)
+  const modalRef = useRef<HTMLDivElement>(null)
   const [showUserModal, setShowUserModal] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
-      const isSmall = window.innerWidth < 768
-      if (isSmall) setIsOpen(false)
+      if (window.innerWidth < 768) setIsOpen(false)
     }
 
-    
     const handleClickOutside = (e: MouseEvent) => {
-  if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-    setShowUserModal(false);
-  }
-};
-
-
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setShowUserModal(false)
+      }
+    }
 
     handleResize()
     window.addEventListener('resize', handleResize)
@@ -44,7 +42,7 @@ export default function Sidebar() {
       window.removeEventListener('resize', handleResize)
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [])
+  }, [setIsOpen])
 
   const handleLogout = () => {
     logout()
@@ -53,9 +51,7 @@ export default function Sidebar() {
 
   const getActiveLink = () => {
     return navLinks.reduce((prev, curr) => {
-      return pathname.startsWith(curr.href) && curr.href.length > prev.href.length
-        ? curr
-        : prev
+      return pathname.startsWith(curr.href) && curr.href.length > prev.href.length ? curr : prev
     }, navLinks[0])
   }
 
@@ -86,9 +82,7 @@ export default function Sidebar() {
             <Link href={href} key={href}>
               <div
                 className={`flex items-center px-4 py-3 mx-2 rounded-lg cursor-pointer transition-colors ${
-                  isActive
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-600 hover:bg-white hover:text-black'
+                  isActive ? 'bg-white text-black shadow-sm' : 'text-gray-600 hover:bg-white hover:text-black'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -109,9 +103,7 @@ export default function Sidebar() {
             {user?.name?.charAt(0).toUpperCase() || 'U'}
           </div>
           {isOpen && (
-            <span className="ml-3 text-sm text-gray-700 font-medium">
-              {user?.name || 'User'}
-            </span>
+            <span className="ml-3 text-sm text-gray-700 font-medium">{user?.name || 'User'}</span>
           )}
         </div>
 
@@ -131,7 +123,7 @@ export default function Sidebar() {
               onClick={handleLogout}
               className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
             >
-              Logout  
+              Logout
             </button>
           </div>
         )}
@@ -139,8 +131,3 @@ export default function Sidebar() {
     </aside>
   )
 }
-
-
-
-
-

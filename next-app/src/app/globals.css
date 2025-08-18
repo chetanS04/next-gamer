@@ -12,6 +12,10 @@
   --color-gc-900: #1c1c1c;
 }
 
+.container{
+  @apply !max-w-[1536px]
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

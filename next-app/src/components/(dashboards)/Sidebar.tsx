@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Home, Badge,Menu, Sliders, Gamepad , FileKey,FileSliders ,FileQuestion} from 'lucide-react'
+import { Home, Badge,Menu, Sliders, Gamepad , FileKey,FileSliders ,FileQuestion , Users , Gamepad2Icon} from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/context/AuthContext'
 
@@ -14,6 +14,8 @@ const navLinks = [
   { href: '/dashboard/games', label: 'Games', icon: Gamepad },
   { href: '/dashboard/Kyc-requests', label: 'Kyc Request', icon: FileKey },
   { href: '/dashboard/create-faq', label: 'FAQ Section', icon: FileQuestion },
+  { href: '/dashboard/users', label: 'Users', icon: Users },
+  { href: '/dashboard/game-purchase-requests', label: 'Game Purchase', icon: Gamepad2Icon },
 
 ]
 

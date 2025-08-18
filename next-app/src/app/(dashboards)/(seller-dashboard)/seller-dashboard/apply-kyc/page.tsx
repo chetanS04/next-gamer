@@ -6,11 +6,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useLoader } from "@/context/LoaderContext";
 import ErrorMessage from "@/components/(sheared)/ErrorMessage";
 import SuccessMessage from "@/components/(sheared)/SuccessMessage";
-import { getCSRF } from "../../../../../../utils/auth";
 import axios from "../../../../../../utils/axios";
 import { AxiosError } from "axios";
 import Image from "next/image";
-
 
 type FormData = {
   video: FileList;
@@ -18,7 +16,6 @@ type FormData = {
   pan: FileList;
   terms?: boolean;
 };
-
 
 type KycData = {
   status: "pending" | "approved" | "rejected" | "referred_back";
@@ -28,12 +25,10 @@ type KycData = {
   pan_path: string;
 };
 
-
 const MAX_VIDEO_SIZE_MB = 30;
 const MAX_IMAGE_SIZE_MB = 8;
 
 type FormDatas = yup.InferType<typeof schema>;
-
 
 const schema = yup.object({
   video: yup
@@ -43,10 +38,14 @@ const schema = yup.object({
       if (!value || value.length === 0) return false; // Ensure boolean
       return value[0].type.startsWith("video/");
     })
-    .test("fileSize", `Video must be less than ${MAX_VIDEO_SIZE_MB}MB`, (value) => {
-      if (!value || value.length === 0) return false;
-      return value[0].size <= MAX_VIDEO_SIZE_MB * 1024 * 1024;
-    }),
+    .test(
+      "fileSize",
+      `Video must be less than ${MAX_VIDEO_SIZE_MB}MB`,
+      (value) => {
+        if (!value || value.length === 0) return false;
+        return value[0].size <= MAX_VIDEO_SIZE_MB * 1024 * 1024;
+      }
+    ),
 
   aadhar: yup
     .mixed<FileList>()
@@ -74,14 +73,11 @@ const schema = yup.object({
       return value[0].size <= MAX_IMAGE_SIZE_MB * 1024 * 1024;
     }),
 
- terms: yup
-  .boolean()
-  .required("You must accept the terms and conditions")
-  .oneOf([true], "You must accept the terms and conditions"),
-
+  terms: yup
+    .boolean()
+    .required("You must accept the terms and conditions")
+    .oneOf([true], "You must accept the terms and conditions"),
 });
-
-
 
 export default function KycForm() {
   const {
@@ -98,9 +94,7 @@ export default function KycForm() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // const [kycData, setKycData] = useState<any>(null);
   const [kycData, setKycData] = useState<KycData | null>(null);
-
 
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [aadharPreview, setAadharPreview] = useState<string | null>(null);
@@ -110,8 +104,7 @@ export default function KycForm() {
   const watchAadhar = watch("aadhar");
   const watchPan = watch("pan");
 
-  const basePath =
-    process.env.NEXT_PUBLIC_UPLOAD_BASE || "http://localhost:8000/storage/";
+  const basePath = process.env.NEXT_PUBLIC_UPLOAD_BASE;
 
   useEffect(() => {
     const fetchKyc = async () => {
@@ -181,7 +174,6 @@ export default function KycForm() {
     formData.append("pan", data.pan[0]);
 
     try {
-      await getCSRF?.();
 
       // 👉 Decide endpoint based on presence of existing KYC
       const endpoint = kycData
@@ -202,18 +194,23 @@ export default function KycForm() {
       const res = await axios.get("/api/kyc-submission-me");
       setKycData(res.data.data);
     } catch (err) {
-    const error = err as AxiosError<{ message?: string; errors?: Record<string, string[]> }>;
+      const error = err as AxiosError<{
+        message?: string;
+        errors?: Record<string, string[]>;
+      }>;
 
-    if (error.response?.data?.errors) {
+      if (error.response?.data?.errors) {
         const errorMessages = Object.values(error.response.data.errors)
-            .flat()
-            .join(", ");
+          .flat()
+          .join(", ");
         setErrorMessage(errorMessages);
-    } else {
-        setErrorMessage(error.response?.data?.message ?? "Submission failed. Please try again.");
-    }
-}
-finally {
+      } else {
+        setErrorMessage(
+          error.response?.data?.message ??
+            "Submission failed. Please try again."
+        );
+      }
+    } finally {
       hideLoader();
     }
   };
@@ -276,9 +273,7 @@ finally {
             className="space-y-6"
           >
             <div>
-              <label className="block font-medium mb-1">
-                5-Second Video *
-              </label>
+              <label className="block font-medium mb-1">5-Second Video *</label>
               <input
                 type="file"
                 accept="video/*"
@@ -286,9 +281,7 @@ finally {
                 className="w-full border p-2 rounded"
               />
               {errors.video && (
-                <p className="text-sm text-red-600">
-                  {errors.video.message}
-                </p>
+                <p className="text-sm text-red-600">{errors.video.message}</p>
               )}
               {videoPreview && (
                 <div
@@ -308,9 +301,7 @@ finally {
             </div>
 
             <div>
-              <label className="block font-medium mb-1">
-                Aadhaar Card *
-              </label>
+              <label className="block font-medium mb-1">Aadhaar Card *</label>
               <input
                 type="file"
                 accept="image/*,application/pdf"
@@ -318,9 +309,7 @@ finally {
                 className="w-full border p-2 rounded"
               />
               {errors.aadhar && (
-                <p className="text-sm text-red-600">
-                  {errors.aadhar.message}
-                </p>
+                <p className="text-sm text-red-600">{errors.aadhar.message}</p>
               )}
               {aadharPreview && (
                 <div
@@ -328,9 +317,9 @@ finally {
                   style={{ height: "355px" }}
                 >
                   <Image
-                  height={600}
-                      width={600}
-                      alt=""
+                    height={600}
+                    width={600}
+                    alt=""
                     src={aadharPreview}
                     className="object-cover w-full h-full"
                     style={{ maxWidth: "600px", maxHeight: "500px" }}
@@ -340,9 +329,7 @@ finally {
             </div>
 
             <div>
-              <label className="block font-medium mb-1">
-                PAN Card *
-              </label>
+              <label className="block font-medium mb-1">PAN Card *</label>
               <input
                 type="file"
                 accept="image/*,application/pdf"
@@ -350,9 +337,7 @@ finally {
                 className="w-full border p-2 rounded"
               />
               {errors.pan && (
-                <p className="text-sm text-red-600">
-                  {errors.pan.message}
-                </p>
+                <p className="text-sm text-red-600">{errors.pan.message}</p>
               )}
               {panPreview && (
                 <div
@@ -360,9 +345,9 @@ finally {
                   style={{ height: "355px" }}
                 >
                   <Image
-                  alt=""
-                  height={600}
-                      width={600}
+                    alt=""
+                    height={600}
+                    width={600}
                     src={panPreview}
                     className="object-cover w-full h-full"
                     style={{ maxWidth: "600px", maxHeight: "500px" }}
@@ -372,11 +357,7 @@ finally {
             </div>
 
             <div className="flex items-start gap-2">
-              <input
-                type="checkbox"
-                {...register("terms")}
-                className="mt-1"
-              />
+              <input type="checkbox" {...register("terms")} className="mt-1" />
               <label className="text-sm">
                 I agree to the{" "}
                 <a
@@ -512,4 +493,3 @@ finally {
     </div>
   );
 }
-

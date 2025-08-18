@@ -26,7 +26,7 @@ const ActionModal = ({
   action,
   onClose,
   onSubmit,
-  loading
+  loading,
 }: {
   open: boolean;
   action: string;
@@ -49,7 +49,7 @@ const ActionModal = ({
           className="w-full border rounded px-3 py-2 mb-4"
           rows={3}
           value={remark}
-          onChange={e => setRemark(e.target.value)}
+          onChange={(e) => setRemark(e.target.value)}
           placeholder={`Enter remark for ${action}...`}
           disabled={loading}
         />
@@ -77,16 +77,15 @@ const ActionModal = ({
 };
 
 const KycSellerDetailPage = () => {
-  const {showLoader , hideLoader} = useLoader()
+  const { showLoader, hideLoader } = useLoader();
   const { id } = useParams();
   const [kyc, setKyc] = useState<KycSubmission | null>(null);
   const [loading, setLoading] = useState(false);
   const [mediaModal, setMediaModal] = useState({
-  open: false,
-  type: '', // 'image' or 'video'
-  src: '',
-});
-
+    open: false,
+    type: "", // 'image' or 'video'
+    src: "",
+  });
 
   // For Modal
   const [modalOpen, setModalOpen] = useState(false);
@@ -96,19 +95,17 @@ const KycSellerDetailPage = () => {
   // Success Notification
   const [successMsg, setSuccessMsg] = useState("");
 
-type MediaType = 'image' | 'video';
+  type MediaType = "image" | "video";
 
-function handleMediaClick(type: MediaType, src: string) {
-  setMediaModal({ open: true, type, src });
-}
+  function handleMediaClick(type: MediaType, src: string) {
+    setMediaModal({ open: true, type, src });
+  }
 
-function closeMediaModal() {
-  setMediaModal({ ...mediaModal, open: false });
-}
+  function closeMediaModal() {
+    setMediaModal({ ...mediaModal, open: false });
+  }
 
-
-  const basePath =
-    process.env.NEXT_PUBLIC_UPLOAD_BASE || "http://localhost:8000/storage/";
+  const basePath = process.env.NEXT_PUBLIC_UPLOAD_BASE;
 
   useEffect(() => {
     if (id) fetchKycDetail();
@@ -116,7 +113,7 @@ function closeMediaModal() {
   }, [id]);
 
   const fetchKycDetail = async () => {
-    showLoader()
+    showLoader();
     try {
       setLoading(true);
       setKyc(null);
@@ -126,7 +123,7 @@ function closeMediaModal() {
       setKyc(null);
     } finally {
       setLoading(false);
-      hideLoader()
+      hideLoader();
     }
   };
 
@@ -139,12 +136,12 @@ function closeMediaModal() {
   // Submit action
   const handleActionSubmit = async (remark: string) => {
     if (!pendingAction) return;
-    showLoader()
+    showLoader();
     setActionLoading(true);
     try {
       await axios.post(`/api/kyc-submissions/${id}/action`, {
         status: pendingAction,
-        admin_remark: remark
+        admin_remark: remark,
       });
       setSuccessMsg(`KYC ${pendingAction} successfully.`);
       setModalOpen(false);
@@ -153,14 +150,13 @@ function closeMediaModal() {
       alert("Failed to perform action");
     } finally {
       setActionLoading(false);
-      hideLoader()
+      hideLoader();
     }
   };
 
   if (loading)
     return <div className="p-4 text-lg font-semibold">Loading...</div>;
-  if (!kyc)
-    return <div className="p-4 text-red-500">KYC not found.</div>;
+  if (!kyc) return <div className="p-4 text-red-500">KYC not found.</div>;
 
   // Hide buttons if already approved
   const showActionButtons = !["approved"].includes(kyc.status);
@@ -178,11 +174,20 @@ function closeMediaModal() {
         </div>
         <div>
           <strong>Status:</strong>
-          <span className={`inline-block ml-2 px-2 py-1 rounded
-            ${kyc.status === "approved" ? "bg-green-100 text-green-700" :
-              kyc.status === "rejected" ? "bg-red-100 text-red-700" :
-              kyc.status === "referred_back" ? "bg-yellow-100 text-yellow-700" :
-              "bg-gray-100 text-gray-700"}`}>{kyc.status}</span>
+          <span
+            className={`inline-block ml-2 px-2 py-1 rounded
+            ${
+              kyc.status === "approved"
+                ? "bg-green-100 text-green-700"
+                : kyc.status === "rejected"
+                ? "bg-red-100 text-red-700"
+                : kyc.status === "referred_back"
+                ? "bg-yellow-100 text-yellow-700"
+                : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {kyc.status}
+          </span>
         </div>
         <div>
           <strong>Admin Remark:</strong> {kyc.admin_remark || "—"}
@@ -194,46 +199,61 @@ function closeMediaModal() {
       </div>
 
       <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-       <div>
-  <p className="font-semibold mb-2">5-Second Video:</p>
-  <div 
-    className="cursor-pointer"
-    onClick={() => handleMediaClick('video', `${basePath}${kyc.video_path}`)}
-  >
-    <video controls className="w-full rounded shadow" style={{maxHeight: 250}}>
-      <source src={`${basePath}${kyc.video_path}`} type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-    <span className="text-xs block text-center mt-1 text-blue-500">Click to enlarge</span>
-  </div>
-</div>
-<div>
-  <p className="font-semibold mb-2">Aadhaar Image:</p>
-  <Image
-    src={`${basePath}${kyc.aadhar_path}`}
-    alt="Aadhaar"
-    height={600}
-                      width={600}
-    className="w-full rounded shadow object-contain cursor-pointer"
-    style={{maxHeight: 250}}
-    onClick={() => handleMediaClick('image', `${basePath}${kyc.aadhar_path}`)}
-  />
-  <span className="text-xs block text-center mt-1 text-blue-500">Click to enlarge</span>
-</div>
-<div>
-  <p className="font-semibold mb-2">PAN Image:</p>
-  <Image
-    src={`${basePath}${kyc.pan_path}`}
-    alt="PAN"
-    height={600}
-                      width={600}
-    className="w-full rounded shadow object-contain cursor-pointer"
-    style={{maxHeight: 250}}
-    onClick={() => handleMediaClick('image', `${basePath}${kyc.pan_path}`)}
-  />
-  <span className="text-xs block text-center mt-1 text-blue-500">Click to enlarge</span>
-</div>
-
+        <div>
+          <p className="font-semibold mb-2">5-Second Video:</p>
+          <div
+            className="cursor-pointer"
+            onClick={() =>
+              handleMediaClick("video", `${basePath}${kyc.video_path}`)
+            }
+          >
+            <video
+              controls
+              className="w-full rounded shadow"
+              style={{ maxHeight: 250 }}
+            >
+              <source src={`${basePath}${kyc.video_path}`} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            <span className="text-xs block text-center mt-1 text-blue-500">
+              Click to enlarge
+            </span>
+          </div>
+        </div>
+        <div>
+          <p className="font-semibold mb-2">Aadhaar Image:</p>
+          <Image
+            src={`${basePath}${kyc.aadhar_path}`}
+            alt="Aadhaar"
+            height={600}
+            width={600}
+            className="w-full rounded shadow object-contain cursor-pointer"
+            style={{ maxHeight: 250 }}
+            onClick={() =>
+              handleMediaClick("image", `${basePath}${kyc.aadhar_path}`)
+            }
+          />
+          <span className="text-xs block text-center mt-1 text-blue-500">
+            Click to enlarge
+          </span>
+        </div>
+        <div>
+          <p className="font-semibold mb-2">PAN Image:</p>
+          <Image
+            src={`${basePath}${kyc.pan_path}`}
+            alt="PAN"
+            height={600}
+            width={600}
+            className="w-full rounded shadow object-contain cursor-pointer"
+            style={{ maxHeight: 250 }}
+            onClick={() =>
+              handleMediaClick("image", `${basePath}${kyc.pan_path}`)
+            }
+          />
+          <span className="text-xs block text-center mt-1 text-blue-500">
+            Click to enlarge
+          </span>
+        </div>
       </div>
 
       {showActionButtons && (
@@ -286,36 +306,41 @@ function closeMediaModal() {
       )}
 
       {mediaModal.open && (
-  <div 
-    className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center"
-    onClick={closeMediaModal}
-  >
-    <div 
-      className="bg-white rounded max-w-3xl w-[90vw] p-4 relative"
-      onClick={e => e.stopPropagation()} 
-    >
-      <button 
-        className="absolute top-2 right-2 text-gray-600 text-xl font-bold"
-        onClick={closeMediaModal}
-      >×</button>
-      {mediaModal.type === 'image' ? (
-        <Image src={mediaModal.src} height={600} width={600}  alt="" className="rounded max-h-[70vh] m-auto" />
-      ) : (
-        <video
-          src={mediaModal.src}
-          controls
-          autoPlay
-          className="rounded max-h-[70vh] m-auto"
-        />
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center"
+          onClick={closeMediaModal}
+        >
+          <div
+            className="bg-white rounded max-w-3xl w-[90vw] p-4 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-2 right-2 text-gray-600 text-xl font-bold"
+              onClick={closeMediaModal}
+            >
+              ×
+            </button>
+            {mediaModal.type === "image" ? (
+              <Image
+                src={mediaModal.src}
+                height={600}
+                width={600}
+                alt=""
+                className="rounded max-h-[70vh] m-auto"
+              />
+            ) : (
+              <video
+                src={mediaModal.src}
+                controls
+                autoPlay
+                className="rounded max-h-[70vh] m-auto"
+              />
+            )}
+          </div>
+        </div>
       )}
-    </div>
-  </div>
-)}
-
     </div>
   );
 };
 
 export default KycSellerDetailPage;
-
-

@@ -4,13 +4,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import axios from "../../../../../utils/axios";
 import Modal from "@/components/(sheared)/Modal";
 import ErrorMessage from "@/components/(sheared)/ErrorMessage";
 import SuccessMessage from "@/components/(sheared)/SuccessMessage";
-import { getCSRF } from "../../../../../utils/auth";
 import { useLoader } from "@/context/LoaderContext";
 import { AxiosError } from "axios";
+import axios from "../../../../../utils/axios";
 
 // ✅ Yup Validation Schema
  const schema = yup.object({
@@ -90,11 +89,10 @@ function FaqManagement() {
     setSuccessMessage(null);
 
     try {
-      await getCSRF();
       if (selectedFaq) {
         await axios.put(`/api/update-faq/${selectedFaq.id}`, data, { withCredentials: true });
       } else {
-        await axios.post("/api/create-faq", data, { withCredentials: true });
+        await axios.post("/api/faq", data, { withCredentials: true });
       }
 
       setSuccessMessage("FAQ saved successfully!");
