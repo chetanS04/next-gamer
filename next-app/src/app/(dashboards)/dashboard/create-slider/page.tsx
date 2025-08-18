@@ -97,8 +97,7 @@ export default function SliderManagement() {
   const fetchSliders = async () => {
     showLoader();
     try {
-      const response = await axios.get(
-        "http://localhost:8000/api/slider-list",
+      const response = await axios.get("/api/slider-list",
         {
           withCredentials: true,
         }
