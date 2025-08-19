@@ -128,9 +128,7 @@ export default function Page() {
         },
       };
 
-      // // @ts-ignore
-      // const razorpay = new window.Razorpay(options);
-
+   
 
       // @ts-expect-error - Razorpay is not in the TypeScript type definitions for `window`
 const razorpay = new window.Razorpay(options);
@@ -159,6 +157,8 @@ const razorpay = new window.Razorpay(options);
         Game not found.
       </div>
     );
+          console.log(game.primary_image);
+
 
   return (
     <>
@@ -166,6 +166,8 @@ const razorpay = new window.Razorpay(options);
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="afterInteractive"
       />
+
+
 
       <div className="container">
         <div className="flex flex-col lg:flex-row justify-start items-start gap-5 mb-8">

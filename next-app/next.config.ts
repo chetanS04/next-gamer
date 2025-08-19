@@ -3,7 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     domains: [
-      "www.api.idbazaar.topntech.com",
+      "localhost", 
+      "api.idbazaar.topntech.com", 
+      "www.api.idbazaar.topntech.com"
     ],
   },
 };
