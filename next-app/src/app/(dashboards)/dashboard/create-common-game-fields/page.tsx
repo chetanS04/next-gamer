@@ -134,13 +134,11 @@ function GameCommonField() {
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
-            withCredentials: true,
           }
         );
       } else {
         await axios.post("/api/games-field-assets", formData, {
           headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true,
         });
       }
 

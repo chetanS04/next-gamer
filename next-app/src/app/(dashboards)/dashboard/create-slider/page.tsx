@@ -98,9 +98,7 @@ export default function SliderManagement() {
     showLoader();
     try {
       const response = await axios.get("/api/slider-list",
-        {
-          withCredentials: true,
-        }
+        
       );
       setSliders(response.data.data);
     } catch (error) {

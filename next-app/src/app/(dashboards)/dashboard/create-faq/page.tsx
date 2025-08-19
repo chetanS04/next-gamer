@@ -90,9 +90,9 @@ function FaqManagement() {
 
     try {
       if (selectedFaq) {
-        await axios.put(`/api/update-faq/${selectedFaq.id}`, data, { withCredentials: true });
+        await axios.put(`/api/update-faq/${selectedFaq.id}`, data);
       } else {
-        await axios.post("/api/faq", data, { withCredentials: true });
+        await axios.post("/api/faq", data);
       }
 
       setSuccessMessage("FAQ saved successfully!");
