@@ -166,14 +166,12 @@ function AdminPlacementManagement() {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-          withCredentials: true,
         });
       } else {
         await axios.post("/api/games", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-          withCredentials: true,
         });
       }
 
